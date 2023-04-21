@@ -14,6 +14,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late Future<Uint8List> _imageBytesFuture;
+  bool like = false;
 
   @override
   void initState() {
@@ -23,6 +24,13 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    IconData icon;
+    if (like) {
+      icon = Icons.favorite_border;
+    } else {
+      icon = Icons.favorite;
+    }
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -43,23 +51,39 @@ class _HomeState extends State<Home> {
               }
             },
           ),
-          ElevatedButton(
-            onPressed: () async {
-              bool hasInternet = await checkInternet();
-              if (hasInternet) {
-                setState(() {
-                  _imageBytesFuture = getImageFromWeb('https://picsum.photos/200/300');
-                });
-              } else {
-                if (context.mounted) {
-                  showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) => NoInternetDialog(),
-                  );
-                }
-              }
-            },
-            child: Text('Generate'),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    like = !like;
+                  });
+                },
+                icon: Icon(icon),
+                label: Text('Like'),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  bool hasInternet = await checkInternet();
+                  if (hasInternet) {
+                    setState(() {
+                      like = false;
+                      _imageBytesFuture = getImageFromWeb('https://picsum.photos/200/300');
+                    });
+                  } else {
+                    if (context.mounted) {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => NoInternetDialog(),
+                      );
+                    }
+                  }
+                },
+                child: Text('Next'),
+              ),
+            ],
           ),
         ],
       ),
