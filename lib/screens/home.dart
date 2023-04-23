@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../widgets/image_container.dart';
 import '../widgets/no_internet.dart';
 import '../utils/check_internet.dart';
-import '../utils/get_image.dart';
+import '../utils/image_operations.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -13,22 +13,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late String _imageName;
   late Future<Uint8List> _imageBytesFuture;
-  bool like = false;
+  bool _like = false;
 
   @override
   void initState() {
     super.initState();
+    _imageName = '${DateTime.now().microsecondsSinceEpoch.toString()}.jpg';
     _imageBytesFuture = getImageFromWeb('https://picsum.photos/200/300');
   }
 
   @override
   Widget build(BuildContext context) {
     IconData icon;
-    if (like) {
-      icon = Icons.favorite_border;
-    } else {
+    if (_like) {
       icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
     }
 
     return Center(
@@ -44,9 +46,8 @@ class _HomeState extends State<Home> {
                 return const Text('Error loading image');
               } else {
                 return ImageContainer(
-                  imageBytes: snapshot.data!,
-                  width: 200,
-                  height: 300,
+                  imageSource: snapshot.data!,
+                  borderRadius: 10,
                 );
               }
             },
@@ -55,10 +56,18 @@ class _HomeState extends State<Home> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton.icon(
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
-                    like = !like;
+                    _like = !_like;
                   });
+                  if (_like) {
+                    final imageBytes = await _imageBytesFuture;
+                    saveImage(imageBytes, _imageName);
+                    print(_imageName);
+                  } else {
+                    deleteImage(_imageName);
+                    print(_imageName);
+                  }
                 },
                 icon: Icon(icon),
                 label: Text('Like'),
@@ -69,7 +78,8 @@ class _HomeState extends State<Home> {
                   bool hasInternet = await checkInternet();
                   if (hasInternet) {
                     setState(() {
-                      like = false;
+                      _like = false;
+                      _imageName = '${DateTime.now().microsecondsSinceEpoch.toString()}.jpg';
                       _imageBytesFuture = getImageFromWeb('https://picsum.photos/200/300');
                     });
                   } else {

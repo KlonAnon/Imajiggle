@@ -1,29 +1,33 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 import 'dart:typed_data';
 
-class ImageContainer extends StatelessWidget {
-  final Uint8List imageBytes;
-  final double width;
-  final double height;
+import 'package:flutter/material.dart';
 
-  const ImageContainer({
-    required this.imageBytes,
-    required this.width,
-    required this.height,
-  });
+class ImageContainer extends StatelessWidget {
+  final dynamic imageSource;
+  final double borderRadius;
+
+  const ImageContainer({required this.imageSource, required this.borderRadius});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10.0),
-        child: Image.memory(
-          imageBytes,
-          fit: BoxFit.contain,
-        ),
-      ),
+    Widget imageWidget;
+    if (imageSource is Uint8List) {
+      imageWidget = Image.memory(
+        imageSource,
+        fit: BoxFit.cover,
+      );
+    } else if (imageSource is File) {
+      imageWidget = Image.file(
+        imageSource,
+        fit: BoxFit.cover,
+      );
+    } else {
+      throw ArgumentError('Unsupported image source type: $imageSource');
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: imageWidget,
     );
   }
 }

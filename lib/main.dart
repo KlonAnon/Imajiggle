@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/screens/home.dart';
+import '/screens/navigation.dart';
 
 void main() {
   runApp(const MainApp());
@@ -13,9 +13,13 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Meine App'),
+          title: const Text('Imajiggle'),
         ),
-        body: Home(),
+        body: NavigationPage(),
+      ),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 34, 174, 255)),
       ),
     );
   }
