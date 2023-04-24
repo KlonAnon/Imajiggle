@@ -24,40 +24,78 @@ class _NavigationPage extends State<NavigationPage> {
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
-    return LayoutBuilder(builder: (context, constraints) {
-      return Scaffold(
-        body: Row(
-          children: [
-            SafeArea(
-              child: NavigationRail(
-                extended: constraints.maxWidth >= 600,
-                destinations: [
-                  NavigationRailDestination(
-                    icon: Icon(Icons.home),
-                    label: Text('Home'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.favorite),
-                    label: Text('Favorites'),
-                  ),
-                ],
-                selectedIndex: selectedIndex,
-                onDestinationSelected: (value) {
-                  setState(() {
-                    selectedIndex = value;
-                  });
-                },
-              ),
-            ),
-            Expanded(
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isSmallScreen = constraints.maxWidth < 600;
+        final bool isLargeScreen = constraints.maxWidth >= 600;
+        final bool isExtended = constraints.maxWidth >= 1000;
+
+        if (isSmallScreen) {
+          return Scaffold(
+            body: SafeArea(
               child: Container(
                 color: Theme.of(context).colorScheme.primaryContainer,
                 child: page,
               ),
             ),
-          ],
-        ),
-      );
-    });
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: selectedIndex,
+              onTap: (value) {
+                setState(() {
+                  selectedIndex = value;
+                });
+              },
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.favorite),
+                  label: 'Favorites',
+                ),
+              ],
+            ),
+          );
+        } else if (isLargeScreen) {
+          return Scaffold(
+            body: SafeArea(
+              child: Row(
+                children: [
+                  NavigationRail(
+                    extended: isExtended,
+                    destinations: [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.home),
+                        label: Text('Home'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.favorite),
+                        label: Text('Favorites'),
+                      ),
+                    ],
+                    selectedIndex: selectedIndex,
+                    onDestinationSelected: (value) {
+                      setState(() {
+                        selectedIndex = value;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      child: page,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else {
+          throw UnimplementedError('no navigationwidget for $constraints');
+        }
+      },
+    );
   }
 }
