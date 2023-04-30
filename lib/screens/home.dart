@@ -21,7 +21,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _imageName = '${DateTime.now().microsecondsSinceEpoch.toString()}.jpg';
-    _imageBytesFuture = getImageFromWeb('https://picsum.photos/200/300');
+    _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
   }
 
   @override
@@ -37,63 +37,77 @@ class _HomeState extends State<Home> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FutureBuilder<Uint8List>(
-            future: _imageBytesFuture,
-            builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return const Text('Error loading image');
-              } else {
-                return ImageContainer(
-                  imageSource: snapshot.data!,
-                  borderRadius: 10,
-                );
-              }
-            },
+          Expanded(
+            child: Align(
+              alignment: Alignment.center,
+              child: FutureBuilder<Uint8List>(
+                future: _imageBytesFuture,
+                builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return const Text('Error loading image');
+                  } else {
+                    return Padding(
+                      padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      child: AspectRatio(
+                        aspectRatio: 3 / 5,
+                        child: ImageContainer(
+                          imageSource: snapshot.data!,
+                          borderRadius: 10,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () async {
-                  setState(() {
-                    _like = !_like;
-                  });
-                  if (_like) {
-                    final imageBytes = await _imageBytesFuture;
-                    saveImage(imageBytes, _imageName);
-                    print(_imageName);
-                  } else {
-                    deleteImage(_imageName);
-                    print(_imageName);
-                  }
-                },
-                icon: Icon(icon),
-                label: Text('Like'),
-              ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () async {
-                  bool hasInternet = await checkInternet();
-                  if (hasInternet) {
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () async {
                     setState(() {
-                      _like = false;
-                      _imageName = '${DateTime.now().microsecondsSinceEpoch.toString()}.jpg';
-                      _imageBytesFuture = getImageFromWeb('https://picsum.photos/200/300');
+                      _like = !_like;
                     });
-                  } else {
-                    if (context.mounted) {
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => NoInternetDialog(),
-                      );
+                    if (_like) {
+                      final imageBytes = await _imageBytesFuture;
+                      saveImage(imageBytes, _imageName);
+                      print(_imageName);
+                    } else {
+                      deleteImage(_imageName);
+                      print(_imageName);
                     }
-                  }
-                },
-                child: Text('Next'),
-              ),
-            ],
+                  },
+                  icon: Icon(icon),
+                  label: Text('Like'),
+                ),
+                SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: () async {
+                    bool hasInternet = await checkInternet();
+                    if (hasInternet) {
+                      setState(() {
+                        _like = false;
+                        _imageName = '${DateTime.now().microsecondsSinceEpoch.toString()}.jpg';
+                        _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
+                      });
+                    } else {
+                      if (context.mounted) {
+                        showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => NoInternetDialog(),
+                        );
+                      }
+                    }
+                  },
+                  child: Text('Next'),
+                ),
+              ],
+            ),
           ),
         ],
       ),
