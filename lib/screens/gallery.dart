@@ -26,10 +26,12 @@ class _GalleryState extends State<Gallery> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
     return GridView.count(
       crossAxisSpacing: 10,
       mainAxisSpacing: 10,
-      crossAxisCount: 3,
+      crossAxisCount: (width / 150).round(),
       children: _imageFiles
           .map(
             (file) => ImageContainer(
