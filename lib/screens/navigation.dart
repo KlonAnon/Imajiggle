@@ -11,12 +11,11 @@ class NavigationPage extends StatefulWidget {
 
 class _NavigationPage extends State<NavigationPage> {
   int selectedIndex = 0;
-  int pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     Widget page;
-    switch (pageIndex) {
+    switch (selectedIndex) {
       case 0:
         page = Home();
         break;
@@ -49,15 +48,9 @@ class _NavigationPage extends State<NavigationPage> {
               onTap: (value) {
                 setState(() {
                   selectedIndex = value;
-                  // map the order of the above switch statement to the order of items array in the BottomNavigationBar
-                  pageIndex = (value + 2) % 3;
                 });
               },
               items: [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.history),
-                  label: 'History',
-                ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
                   label: 'Home',
@@ -65,6 +58,10 @@ class _NavigationPage extends State<NavigationPage> {
                 BottomNavigationBarItem(
                   icon: Icon(Icons.favorite),
                   label: 'Favorites',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.history),
+                  label: 'History',
                 ),
               ],
             ),
@@ -94,7 +91,6 @@ class _NavigationPage extends State<NavigationPage> {
                     onDestinationSelected: (value) {
                       setState(() {
                         selectedIndex = value;
-                        pageIndex = value;
                       });
                     },
                   ),
