@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'home.dart';
-import 'gallery.dart';
-import 'history.dart';
+import '../screens/home.dart';
+import '../screens/gallery.dart';
+import '../screens/history.dart';
 
 class NavigationPage extends StatefulWidget {
   @override
