@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../widgets/image_container.dart';
 import '../widgets/no_internet.dart';
-import '../utils/check_internet.dart';
+import '../widgets/error_msg.dart';
 import '../utils/image_operations.dart';
 
 class Home extends StatefulWidget {
@@ -14,7 +14,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late String _imageName;
-  late Future<Uint8List> _imageBytesFuture;
+  late Future<Uint8List?> _imageBytesFuture;
   bool _like = false;
 
   @override
@@ -34,21 +34,99 @@ class _HomeState extends State<Home> {
     }
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: FutureBuilder<Uint8List>(
-                future: _imageBytesFuture,
-                builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return const Text('Error loading image');
-                  } else {
-                    return Padding(
+      child: FutureBuilder<Uint8List?>(
+        future: _imageBytesFuture,
+        builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: null,
+                        icon: Icon(icon),
+                        label: Text('Like'),
+                      ),
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: null,
+                        child: Text('Next'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          } else if (snapshot.hasError) {
+            return Column(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: ErrorMsg(errorIcon: Icons.error, errorMsg: 'Error loading image'),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
+                      });
+                    },
+                    icon: Icon(Icons.refresh),
+                    label: Text('Try again'),
+                  ),
+                ),
+              ],
+            );
+          } else if (snapshot.data == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => NoInternetDialog(),
+              );
+            });
+            return Column(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: ErrorMsg(errorIcon: Icons.error, errorMsg: 'Error loading image'),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
+                      });
+                    },
+                    icon: Icon(Icons.refresh),
+                    label: Text('Try again'),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Padding(
                       padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                       child: AspectRatio(
                         aspectRatio: 3 / 5,
@@ -57,59 +135,48 @@ class _HomeState extends State<Home> {
                           borderRadius: 10,
                         ),
                       ),
-                    );
-                  }
-                },
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    setState(() {
-                      _like = !_like;
-                    });
-                    if (_like) {
-                      final imageBytes = await _imageBytesFuture;
-                      saveImage(imageBytes, _imageName);
-                      print(_imageName);
-                    } else {
-                      deleteImage(_imageName);
-                      print(_imageName);
-                    }
-                  },
-                  icon: Icon(icon),
-                  label: Text('Like'),
+                    ),
+                  ),
                 ),
-                SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: () async {
-                    bool hasInternet = await checkInternet();
-                    if (hasInternet) {
-                      setState(() {
-                        _like = false;
-                        _imageName = '${DateTime.now().microsecondsSinceEpoch.toString()}.jpg';
-                        _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
-                      });
-                    } else {
-                      if (context.mounted) {
-                        showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => NoInternetDialog(),
-                        );
-                      }
-                    }
-                  },
-                  child: Text('Next'),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _like = !_like;
+                          });
+                          if (_like) {
+                            saveImage(snapshot.data!, _imageName);
+                            print(_imageName);
+                          } else {
+                            deleteImage(_imageName);
+                            print(_imageName);
+                          }
+                        },
+                        icon: Icon(icon),
+                        label: Text('Like'),
+                      ),
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _like = false;
+                            _imageName = '${DateTime.now().microsecondsSinceEpoch.toString()}.jpg';
+                            _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
+                          });
+                        },
+                        child: Text('Next'),
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ),
-          ),
-        ],
+            );
+          }
+        },
       ),
     );
   }

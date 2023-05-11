@@ -4,9 +4,16 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-Future<Uint8List> getImageFromWeb(String url) async {
-  final response = await http.get(Uri.parse(url));
-  return response.bodyBytes;
+import '../utils/check_internet.dart';
+
+Future<Uint8List?> getImageFromWeb(String url) async {
+  bool hasInternet = await checkInternet();
+  if (hasInternet) {
+    final response = await http.get(Uri.parse(url));
+    return response.bodyBytes;
+  } else {
+    return null;
+  }
 }
 
 Future<List<File>> getImagesFromDirectory() async {

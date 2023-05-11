@@ -6,7 +6,7 @@ class NoInternetDialog extends StatelessWidget {
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.warning, color: Colors.yellow),
+          Icon(Icons.warning, color: Color.fromARGB(255, 235, 215, 42)),
           SizedBox(width: 8.0),
           Text('No Internet Connection'),
         ],

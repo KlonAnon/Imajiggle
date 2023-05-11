@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
+import './fullscreen_image.dart';
+
 class ImageContainer extends StatelessWidget {
   final dynamic imageSource;
   final double borderRadius;
@@ -37,41 +39,6 @@ class ImageContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         child: imageWidget,
       ),
-    );
-  }
-}
-
-class FullScreenImage extends StatelessWidget {
-  final dynamic imageSource;
-
-  const FullScreenImage({required this.imageSource});
-
-  @override
-  Widget build(BuildContext context) {
-    Widget imageWidget;
-    if (imageSource is Uint8List) {
-      imageWidget = Image.memory(
-        imageSource,
-        fit: BoxFit.contain,
-      );
-    } else if (imageSource is File) {
-      imageWidget = Image.file(
-        imageSource,
-        fit: BoxFit.contain,
-      );
-    } else {
-      throw ArgumentError('Unsupported image source type: $imageSource');
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
-      body: SizedBox.expand(
-        child: imageWidget,
-      ),
-      backgroundColor: Colors.black,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'home.dart';
 import 'gallery.dart';
+import 'history.dart';
 
 class NavigationPage extends StatefulWidget {
   @override
@@ -9,17 +10,21 @@ class NavigationPage extends StatefulWidget {
 }
 
 class _NavigationPage extends State<NavigationPage> {
-  var selectedIndex = 0;
+  int selectedIndex = 0;
+  int pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     Widget page;
-    switch (selectedIndex) {
+    switch (pageIndex) {
       case 0:
         page = Home();
         break;
       case 1:
         page = Gallery();
+        break;
+      case 2:
+        page = History();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -44,9 +49,15 @@ class _NavigationPage extends State<NavigationPage> {
               onTap: (value) {
                 setState(() {
                   selectedIndex = value;
+                  // map the order of the above switch statement to the order of items array in the BottomNavigationBar
+                  pageIndex = (value + 2) % 3;
                 });
               },
               items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.history),
+                  label: 'History',
+                ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
                   label: 'Home',
@@ -74,11 +85,16 @@ class _NavigationPage extends State<NavigationPage> {
                         icon: Icon(Icons.favorite),
                         label: Text('Favorites'),
                       ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.history),
+                        label: Text('History'),
+                      ),
                     ],
                     selectedIndex: selectedIndex,
                     onDestinationSelected: (value) {
                       setState(() {
                         selectedIndex = value;
+                        pageIndex = value;
                       });
                     },
                   ),
