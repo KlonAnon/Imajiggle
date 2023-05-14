@@ -1,12 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 class DeleteConfirmation extends StatelessWidget {
-  final File imageFile;
-
-  const DeleteConfirmation({required this.imageFile});
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -16,15 +10,13 @@ class DeleteConfirmation extends StatelessWidget {
         TextButton(
           child: Text('Cancel'),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(false);
           },
         ),
         TextButton(
           child: Text('Delete'),
           onPressed: () {
-            Navigator.of(context).pop();
-            imageFile.delete();
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(true);
           },
         ),
       ],

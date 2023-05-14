@@ -1,8 +1,21 @@
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+
 import '/navigation/navigation.dart';
 
+import 'models/home_model.dart';
+import 'models/gallery_model.dart';
+
 void main() {
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => GalleryModel()),
+        ChangeNotifierProvider(create: (context) => HomeModel()),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
