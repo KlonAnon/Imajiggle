@@ -1,181 +1,152 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../models/home_model.dart';
+import '../models/gallery_model.dart';
 import '../widgets/image_container.dart';
 import '../widgets/no_internet.dart';
 import '../widgets/error_msg.dart';
 import '../utils/image_operations.dart';
 
-class Home extends StatefulWidget {
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  late String _imageName;
-  late Future<Uint8List?> _imageBytesFuture;
-  bool _like = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _imageName = '${DateTime.now().microsecondsSinceEpoch.toString()}.jpg';
-    _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
-  }
-
+class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    IconData icon;
-    if (_like) {
-      icon = Icons.favorite;
-    } else {
-      icon = Icons.favorite_border;
-    }
-
     return Center(
-      child: FutureBuilder<Uint8List?>(
-        future: _imageBytesFuture,
-        builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: null,
-                        icon: Icon(icon),
-                        label: Text('Like'),
+      child: Consumer<HomeModel>(
+        builder: (context, homeModel, _) {
+          return FutureBuilder<Uint8List?>(
+            future: homeModel.futureImage,
+            builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(),
                       ),
-                      SizedBox(width: 16),
-                      ElevatedButton(
-                        onPressed: null,
-                        child: Text('Next'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: null,
+                            icon: Icon(homeModel.likeIcon),
+                            label: Text('Like'),
+                          ),
+                          SizedBox(width: 16),
+                          ElevatedButton(
+                            onPressed: null,
+                            child: Text('Next'),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return Column(
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: ErrorMsg(errorIcon: Icons.error, errorMsg: 'Error loading image'),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
-                      });
-                    },
-                    icon: Icon(Icons.refresh),
-                    label: Text('Try again'),
-                  ),
-                ),
-              ],
-            );
-          } else if (snapshot.data == null) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog<String>(
-                context: context,
-                builder: (BuildContext context) => NoInternetDialog(),
-              );
-            });
-            return Column(
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: ErrorMsg(errorIcon: Icons.error, errorMsg: 'Error loading image'),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
-                      });
-                    },
-                    icon: Icon(Icons.refresh),
-                    label: Text('Try again'),
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: AspectRatio(
-                        aspectRatio: 3 / 5,
-                        child: ImageContainer(
-                          imageSource: snapshot.data!,
-                          borderRadius: 10,
+                    ),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: ErrorMsg(errorIcon: Icons.error, errorMsg: 'Error loading image'),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          homeModel.generateImage();
+                        },
+                        icon: Icon(Icons.refresh),
+                        label: Text('Try again'),
+                      ),
+                    ),
+                  ],
+                );
+              } else if (snapshot.data == null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => NoInternetDialog(),
+                  );
+                });
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: ErrorMsg(errorIcon: Icons.error, errorMsg: 'Error loading image'),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          homeModel.generateImage();
+                        },
+                        icon: Icon(Icons.refresh),
+                        label: Text('Try again'),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          child: AspectRatio(
+                            aspectRatio: 3 / 5,
+                            child: ImageContainer(
+                              imageSource: snapshot.data!,
+                              borderRadius: 10,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            _like = !_like;
-                          });
-                          if (_like) {
-                            saveImage(snapshot.data!, _imageName);
-                            print(_imageName);
-                          } else {
-                            deleteImage(_imageName);
-                            print(_imageName);
-                          }
-                        },
-                        icon: Icon(icon),
-                        label: Text('Like'),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              homeModel.like = !homeModel.like;
+                            },
+                            icon: Icon(homeModel.likeIcon),
+                            label: Text('Like'),
+                          ),
+                          SizedBox(width: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              final galleryModel = Provider.of<GalleryModel>(context, listen: false);
+                              if (homeModel.like) {
+                                galleryModel.addImage(snapshot.data!);
+                              }
+                              homeModel.generateImage();
+                            },
+                            child: Text('Next'),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _like = false;
-                            _imageName = '${DateTime.now().microsecondsSinceEpoch.toString()}.jpg';
-                            _imageBytesFuture = getImageFromWeb('https://picsum.photos/900/1500');
-                          });
-                        },
-                        child: Text('Next'),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
+                    ),
+                  ],
+                );
+              }
+            },
+          );
         },
       ),
     );

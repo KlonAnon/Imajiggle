@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class GalleryModel extends ChangeNotifier {
     loadImagesFromDirectory();
   }
 
-  Future<void> loadImagesFromDirectory() async {
+  void loadImagesFromDirectory() async {
     _isLoading = true;
     _hasError = false;
     notifyListeners();
@@ -40,7 +41,11 @@ class GalleryModel extends ChangeNotifier {
     }
   }
 
-  Future<void> addImage(File imageFile) async {
+  Future<void> addImage(Uint8List imageBytes) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final imageFile = File('${directory.path}/${DateTime.now().microsecondsSinceEpoch.toString()}.jpg');
+    await imageFile.writeAsBytes(imageBytes);
+
     _imageFiles.add(imageFile);
     notifyListeners();
   }
