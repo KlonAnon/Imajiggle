@@ -21,18 +21,20 @@ class Gallery extends StatelessWidget {
           } else if (galleryModel.imageFiles.isEmpty) {
             return ErrorMsg(errorIcon: Icons.image_not_supported, errorMsg: 'No liked images yet');
           } else {
-            return GridView.count(
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              crossAxisCount: (width / 150).round(),
-              children: galleryModel.imageFiles
-                  .map(
-                    (file) => ImageContainer(
-                      imageSource: file,
-                      borderRadius: 5,
-                    ),
-                  )
-                  .toList(),
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                crossAxisCount: (width / 150).round(),
+              ),
+              itemCount: galleryModel.imageFiles.length,
+              itemBuilder: (context, index) {
+                final imageFile = galleryModel.imageFiles[index];
+                return ImageContainer(
+                  imageSource: imageFile,
+                  borderRadius: 5,
+                );
+              },
             );
           }
         },
