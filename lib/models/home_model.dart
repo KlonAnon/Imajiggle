@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import '../utils/check_internet.dart';
 
 class HomeModel extends ChangeNotifier {
+  Uint8List? currentImage;
+
   late Future<Uint8List?> _futureImage;
   Future<Uint8List?> get futureImage => _futureImage;
 

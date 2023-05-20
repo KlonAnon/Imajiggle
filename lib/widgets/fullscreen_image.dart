@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:mobile/models/gallery_model.dart';
+import '../models/gallery_model.dart';
 
 import '../widgets/delete_confirmation.dart';
 
@@ -53,9 +53,7 @@ class FullScreenImage extends StatelessWidget {
                         return DeleteConfirmation();
                       },
                     ).then((value) {
-                      print('value: $value');
                       if (value != null && value is bool && value) {
-                        print('got called');
                         final galleryModel = Provider.of<GalleryModel>(context, listen: false);
                         galleryModel.deleteImage(imageSource);
                         Navigator.of(context).pop();

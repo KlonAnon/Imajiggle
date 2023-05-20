@@ -8,9 +8,52 @@ import '../models/gallery_model.dart';
 import '../widgets/image_container.dart';
 import '../widgets/no_internet.dart';
 import '../widgets/error_msg.dart';
-import '../utils/image_operations.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with WidgetsBindingObserver {
+  GalleryModel? _galleryModel;
+  HomeModel? _homeModel;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    if (_homeModel!.like && _galleryModel != null && _homeModel!.currentImage != null) {
+      _galleryModel!.saveImage(_homeModel!.currentImage!);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _homeModel!.generateImage();
+      });
+    }
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _galleryModel = Provider.of<GalleryModel>(context, listen: false);
+    _homeModel = Provider.of<HomeModel>(context, listen: false);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      if (_homeModel!.like && _galleryModel != null && _homeModel!.currentImage != null) {
+        _galleryModel!.saveImage(_homeModel!.currentImage!);
+        _homeModel!.generateImage();
+      }
+    }
+    super.didChangeAppLifecycleState(state);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -71,6 +114,7 @@ class Home extends StatelessWidget {
                   ],
                 );
               } else if (snapshot.data == null) {
+                homeModel.currentImage = null;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showDialog<String>(
                     context: context,
@@ -98,6 +142,7 @@ class Home extends StatelessWidget {
                   ],
                 );
               } else {
+                homeModel.currentImage = snapshot.data;
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -133,7 +178,7 @@ class Home extends StatelessWidget {
                             onPressed: () {
                               final galleryModel = Provider.of<GalleryModel>(context, listen: false);
                               if (homeModel.like) {
-                                galleryModel.addImage(snapshot.data!);
+                                galleryModel.saveImage(snapshot.data!);
                               }
                               homeModel.generateImage();
                             },

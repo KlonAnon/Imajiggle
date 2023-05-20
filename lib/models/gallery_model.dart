@@ -41,7 +41,7 @@ class GalleryModel extends ChangeNotifier {
     }
   }
 
-  Future<void> addImage(Uint8List imageBytes) async {
+  Future<void> saveImage(Uint8List imageBytes) async {
     final directory = await getApplicationDocumentsDirectory();
     final imageFile = File('${directory.path}/${DateTime.now().microsecondsSinceEpoch.toString()}.jpg');
     await imageFile.writeAsBytes(imageBytes);
