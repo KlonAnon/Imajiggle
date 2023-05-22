@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// Widget for showing a delete confirmation dialog
+// the dialog returns true to its caller when delete was clicked and false if cancel was called
 class DeleteConfirmation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

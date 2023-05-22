@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Widget for displaying an error message in the style of the app
 class ErrorMsg extends StatelessWidget {
   final IconData errorIcon;
   final String errorMsg;

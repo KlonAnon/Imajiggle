@@ -14,6 +14,7 @@ class _NavigationPage extends State<NavigationPage> {
 
   @override
   Widget build(BuildContext context) {
+    // map the selectedIndex to a screen widget
     Widget page;
     switch (selectedIndex) {
       case 0:
@@ -29,17 +30,19 @@ class _NavigationPage extends State<NavigationPage> {
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
+    // use a LayoutBuilder to call the builder function when the layout constraints (screen size) change
     return LayoutBuilder(
       builder: (context, constraints) {
         final bool isSmallScreen = constraints.maxWidth < 600;
         final bool isLargeScreen = constraints.maxWidth >= 600;
         final bool isExtended = constraints.maxWidth >= 1000;
 
+        // if the screen is < 600 logical pixel, use a BottomNavigationBar
         if (isSmallScreen) {
           return Scaffold(
             body: SafeArea(
               child: Container(
-                color: Theme.of(context).colorScheme.primaryContainer,
+                color: Theme.of(context).colorScheme.primaryContainer, // use the apps color theme
                 child: page,
               ),
             ),
@@ -66,13 +69,14 @@ class _NavigationPage extends State<NavigationPage> {
               ],
             ),
           );
+        // if the screen is >= 600 logical pixel, use a NavigationRail
         } else if (isLargeScreen) {
           return Scaffold(
             body: SafeArea(
               child: Row(
                 children: [
                   NavigationRail(
-                    extended: isExtended,
+                    extended: isExtended, // if the screen is >= 1000 logical pixel, show the icon labels
                     destinations: [
                       NavigationRailDestination(
                         icon: Icon(Icons.home),
@@ -96,7 +100,7 @@ class _NavigationPage extends State<NavigationPage> {
                   ),
                   Expanded(
                     child: Container(
-                      color: Theme.of(context).colorScheme.primaryContainer,
+                      color: Theme.of(context).colorScheme.primaryContainer, // use the apps color theme
                       child: page,
                     ),
                   ),

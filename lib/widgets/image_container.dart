@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 
 import './fullscreen_image.dart';
 
+// Widget for displaying an image in memory or storage with round edges + gesture to tap into fullscreen mode
+// notice how BoxFit.cover is used to make sure the image definitely fills out its space without being stretched
 class ImageContainer extends StatelessWidget {
   final dynamic imageSource;
-  final double borderRadius;
+  final double borderRadius; // represents how round the edges should be
 
   const ImageContainer({required this.imageSource, required this.borderRadius});
 

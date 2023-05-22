@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../widgets/error_msg.dart';
 
+// Widget for displaying the History-Screen
+// the logic of this screen is not implemented yet, for implementation a HistoryModel will be needed!
 class History extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

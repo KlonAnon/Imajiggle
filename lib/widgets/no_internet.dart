@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Widget for showing a No-Internet-Dialog
 class NoInternetDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
