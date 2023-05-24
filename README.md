@@ -14,9 +14,9 @@ Due to time constraints I unfortunately wasn't able to implement some important/
 
 ### Features and Principles implemented
 Features:
-- The app generates random images that can be licked
-- Licked images can be viewed in the gallery (liked images are stored on the devices storage)
-- Licked images can be deleted
+- The app generates random images that can be liked
+- Liked images can be viewed in the gallery (liked images are stored on the devices storage)
+- Liked images can be deleted
 - By clicking an image it expands to a fullscreen view
 
 Principles: 
