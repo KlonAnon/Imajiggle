@@ -129,13 +129,16 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 // and add an error message and try-again button to the screen
               } else if (snapshot.data == null) {
                 homeModel.currentImage = null;
-                // ensure that the widget tree has finished rendering the current frame
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) => NoInternetDialog(),
-                  );
-                });
+                if (homeModel.showNoInternetDialog) {
+                  homeModel.showNoInternetDialog = false;
+                  // ensure that the widget tree has finished rendering the current frame
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => NoInternetDialog(),
+                    );
+                  });
+                }
                 return Column(
                   children: [
                     Expanded(

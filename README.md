@@ -1,7 +1,7 @@
 # Imajiggle
 
 ## About
-This is a flutter app programmed and tested to run on android 11 or higher (there's no guarantee for this app running on other platforms). The idea behind the app is to generate random images for boosting creativity.
+This is a flutter app programmed and tested to run on android 12 or higher (there's no guarantee for this app running on other platforms). The idea behind the app is to generate random images for boosting creativity.
 It was created as a university project and my first flutter project. 
 
 **Help is welcome!**  

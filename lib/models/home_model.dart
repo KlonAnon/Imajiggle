@@ -8,6 +8,7 @@ import '../utils/check_internet.dart';
 // Model of the home screen
 class HomeModel extends ChangeNotifier {
   Uint8List? currentImage;
+  bool showNoInternetDialog = true;
 
   late Future<Uint8List?> _futureImage;
   Future<Uint8List?> get futureImage => _futureImage;
@@ -49,6 +50,7 @@ class HomeModel extends ChangeNotifier {
 
   // generate a new image by calling getImageFromWeb and reset _like and _likeIcon
   void generateImage() {
+    showNoInternetDialog = true;
     _futureImage = getImageFromWeb();
     _like = false;
     _likeIcon = Icons.favorite_border;
