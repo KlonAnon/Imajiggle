@@ -42,6 +42,7 @@ Principles:
 - Adding Swiping mechanism to the generator screen: When in the fullscreen mode of the generated picture, make it possible to generate a new picture by swiping left
 - Alternative liking: Make the Image likeable by double clicking it (this should be possible when in the fullscreen mode or the normal mode)
 - Ask the user if he wants to keep his liked images when uninstalling the app
+- Deletion Notice with an undo option: After successfully deleting one ore more images, show a SnackBar at the bottom of the app with the option to undo the deletion 
 
 - Optional:
     - Instead of saving the images in the apps documents directory, save them in a folder inside the photos folder of the phone --> for this one would have to add the required permissions inside the AndroidManifest.xml
